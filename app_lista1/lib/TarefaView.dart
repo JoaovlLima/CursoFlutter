@@ -54,6 +54,7 @@ class ListaTarefasScreen extends StatelessWidget {
                         onChanged: (value) {
                           // Chamando o método marcarComoConcluida do Provider para atualizar o estado
                           controller.marcarComoConcluida(index);
+                          
                         },
                       ),
                       // Exclui a tarefa ao manter pressionado
@@ -67,6 +68,7 @@ class ListaTarefasScreen extends StatelessWidget {
               },
             ),
           ),
+         
         ],
       ),
     );
