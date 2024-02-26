@@ -6,7 +6,6 @@ class ListaTarefasScreen extends StatelessWidget {
   // Controlador para o campo de texto de nova tarefa
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controller2 = TextEditingController();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +45,17 @@ class ListaTarefasScreen extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    
                     // Chamando o método adicionarTarefa do Provider para atualizar o estado
                     Provider.of<ListaCompraControler>(context, listen: false)
                         .adicionarTarefa(
-                          _controller.text,
-                          int.parse(_controller2.text) // Passando o mesmo texto para a quantidade por enquanto
-                          
-                        );
+                            _controller.text,
+                            int.parse(_controller2
+                                .text) // Passando o mesmo texto para a quantidade por enquanto
+
+                            );
+                    // Ordenando a lista após adicionar uma nova tarefa
+                    Provider.of<ListaCompraControler>(context, listen: false)
+                        .ordenarTarefa();
                     // Limpar os campos de texto após adicionar a tarefa
                     _controller.clear();
                     _controller2.clear();
@@ -63,7 +65,7 @@ class ListaTarefasScreen extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Lista de tarefas usando um Consumer do Provider para atualização automática
           Expanded(
             child: Consumer<ListaCompraControler>(

@@ -11,7 +11,7 @@ class ListaCompraControler extends ChangeNotifier {
   String condicao = '';
   //métodos Crud
   void adicionarTarefa(String descricao, int quantidade){
-    if( descricao.trim().isNotEmpty){
+    if( descricao.trim().isNotEmpty ){
       _compras.add(Compra(descricao, quantidade, false));
     notifyListeners();
     }
@@ -31,5 +31,8 @@ class ListaCompraControler extends ChangeNotifier {
       _compras.removeAt(indice);
       notifyListeners();
     }
+  }
+  void ordenarTarefa(){
+     _compras.sort((a, b) => a.descricao.compareTo(b.descricao));
   }
 }
