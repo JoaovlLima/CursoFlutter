@@ -10,9 +10,9 @@ class ListaCompraControler extends ChangeNotifier {
   List<Compra> get compra => _compras;
   String condicao = '';
   //métodos Crud
-  void adicionarTarefa(String descricao, int quantidade){
+  void adicionarTarefa(String descricao, int quantidade, String uniMedida){
     if( descricao.trim().isNotEmpty ){
-      _compras.add(Compra(descricao, quantidade, false));
+      _compras.add(Compra(descricao, quantidade,uniMedida, false));
     notifyListeners();
     }
     
