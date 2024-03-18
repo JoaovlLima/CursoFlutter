@@ -17,8 +17,8 @@ title: Text("3 Container"),)
 ,body: Column(
 children: [
 Container(
-color: Colors.red,
-width: 100,
+color: Color.fromARGB(255, 25, 75, 166),
+width: 200,
 height: 100,
 // child: Center(
 child:
@@ -26,13 +26,13 @@ Text("Container 1"),
 // )
 ),
 Container(
-color: Colors.blue,
-width: 150,
+color: Color.fromARGB(255, 120, 236, 180),
+width: 300,
 height: 150,
 ),
 Container(
 color: Colors.green,
-width: 200,
+width: 400,
 height: 200,
 )
 ],)

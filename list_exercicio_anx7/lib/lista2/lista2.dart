@@ -100,7 +100,7 @@ OutlinedButton.icon(
               leading: Icon(Icons.numbers),
               title: Text('Aba 1'),
               onTap: () {
-            
+                DefaultTabController.of(context)?.animateTo(0);
                 Navigator.pop(context); // Fechar o drawer
               },
             ),
@@ -108,8 +108,9 @@ OutlinedButton.icon(
               leading: Icon(Icons.numbers),
               title: Text('Aba 2'),
               onTap: () {
-                
-                 Navigator.pop(context); // Fechar o drawer
+                 
+                 Navigator.pop(context);
+                  // Fechar o drawer
               },
             ),
              ListTile(
@@ -124,7 +125,7 @@ OutlinedButton.icon(
               leading: Icon(Icons.numbers),
               title: Text('Aba 4'),
               onTap: () {
-                
+                  
                  Navigator.pop(context); // Fechar o drawer
               },
             ),
