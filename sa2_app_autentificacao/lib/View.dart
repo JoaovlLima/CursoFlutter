@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sa2_app_autentificacao/db.dart';
 
 import 'Model.dart';
@@ -13,6 +13,21 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final dbHelper = DatabaseHelper();
+  final _formKey = GlobalKey<FormState>();
+
+  // Controllers para os campos de texto
+  TextEditingController _idController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _telefoneController = TextEditingController();
+  TextEditingController _senhaController = TextEditingController();
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _showAddContactDialog(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,28 +61,109 @@ class HomePageState extends State<HomePage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Login'),
-                content: Text('Implemente o formulário de cadastro aqui.'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Fechar'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: Icon(Icons.add),
-      ),
     );
+  }
+
+  void _showAddContactDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login'),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _idController,
+                  decoration: InputDecoration(labelText: 'ID'),
+                  keyboardType: TextInputType
+                      .number, // Define o tipo de teclado para numérico
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter
+                        .digitsOnly // Permite apenas a entrada de dígitos
+                  ],
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter an ID';
+                    } else if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                      return 'Please enter a valid ID (only digits allowed)';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Email'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter a email';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _senhaController,
+                  decoration: InputDecoration(labelText: 'Senha'),
+                  obscureText: true,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+               
+                  if (_formKey.currentState!.validate()) {
+                    _addContact();
+                    Navigator.of(context).pop();
+                  }
+               
+                }
+              ,
+              child: Text('Entrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addContact() {
+    final newContact = ContactModel(
+      id: int.parse(_idController.text),
+      name: _nameController.text,
+      email: _emailController.text,
+      telefone: _telefoneController.text,
+      senha: _senhaController.text,
+    );
+
+    dbHelper.create(newContact);
+    setState(() {
+      // Atualiza a lista de contatos
+    });
+  }
+
+  Future<bool> _verificacaoContact() async {
+    final email = _emailController.text;
+    final usuario = await dbHelper.pesquisar(email);
+    bool registrado;
+
+    if (usuario != null) {
+      print("Pessoa Registrada");
+      print(usuario);
+      registrado = true;
+    } else {
+      print("Pessoa não Registrada");
+      registrado = false;
+    }
+    return registrado;
   }
 }

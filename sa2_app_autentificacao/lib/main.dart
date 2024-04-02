@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sa2_app_autentificacao/View.dart';
+
 
 void main(){
+
   runApp(Myapp());
 }
 class Myapp extends StatelessWidget{

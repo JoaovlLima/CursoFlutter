@@ -4,9 +4,9 @@ import 'package:sa2_app_autentificacao/Model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper  {
-  static const String DATABASE_NAME = 'contacts.db';
-  static const String TABLE_NAME = 'contacts';
-  static const String CREATE_CONTACTS_TABLE_SCRIPT = "CREATE TABLE contacts(id INTERGER PRIMARY KEY," +
+  static const String DATABASE_NAME = 'contatos.db';
+  static const String TABLE_NAME = 'contatos';
+  static const String CREATE_CONTACTS_TABLE_SCRIPT = "CREATE TABLE contatos(id INTERGER PRIMARY KEY," +
   "name TEXT, email TEXT, telefone TEXT, senha TEXT)";
 
   Future<Database> _getDatabase() async {
@@ -81,5 +81,20 @@ class DatabaseHelper  {
       return;
     }
   }
+  // Método para buscar um contato pelo email no banco de dados
+Future<ContactModel?> pesquisar(String email) async {
+  final Database db = await _getDatabase();
+  final List<Map<String, dynamic>> maps = await db.query(
+    TABLE_NAME,
+    where: 'email = ?',
+    whereArgs: [email],
+  );
+
+  if (maps.isNotEmpty) {
+    // Retorna o primeiro contato encontrado com o email fornecido.
+    return ContactModel.fromMap(maps.first);
+  }
+  return null; // Retorna nulo se nenhum contato for encontrado.
+}
   
 }
