@@ -61,6 +61,14 @@ class HomePageState extends State<HomePage> {
           }
         },
       ),
+      persistentFooterButtons: [
+        TextButton(
+          onPressed: () {
+            _showAddContactDialog(context);
+          },
+          child: Text('Login'),
+        ),
+      ],
     );
   }
 
@@ -70,7 +78,7 @@ class HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Login'),
-          content: Form(
+          content: SingleChildScrollView(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -114,21 +122,112 @@ class HomePageState extends State<HomePage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                showCadastroDialog(context);
               },
-              child: Text('Cancel'),
+              child: Text('Cadastrar'),
             ),
             TextButton(
               onPressed: () async {
-               
-                  if (_formKey.currentState!.validate()) {
+                bool pessoaRegistrada = await _verificacaoContact();
+                if (pessoaRegistrada) {
+                  // Permitir login
+                  if (_formKey.currentState?.validate() ?? false) {
                     _addContact();
                     Navigator.of(context).pop();
                   }
-               
+                } else {
+                  // Exibir mensagem de que o email não está registrado
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Erro'),
+                        content: Text('Email não registrado.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Fechar'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Cadastrar'),
+                            onPressed: () {
+                              showCadastroDialog(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 }
-              ,
+              },
               child: Text('Entrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showCadastroDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cadastro'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _idController,
+                  decoration: InputDecoration(labelText: 'ID'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Nome'),
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _telefoneController,
+                  decoration: InputDecoration(labelText: 'Telefone'),
+                  keyboardType: TextInputType.phone,
+                ),
+                SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _senhaController,
+                  decoration: InputDecoration(labelText: 'Senha'),
+                  obscureText: true,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _addContact();
+                Navigator.of(context).pop();
+              },
+              child: Text('Cadastrar'),
             ),
           ],
         );
