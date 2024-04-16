@@ -10,7 +10,7 @@ class Usuario {
 
    Map<String, dynamic> toMap() {
      return {
-      'nome': nome,
+      'u_nome': nome,
       'email': email,
       'senha': senha,
     };
@@ -19,7 +19,7 @@ class Usuario {
    factory Usuario.fromMap(Map<String, dynamic> map) {
     return Usuario(
       id: map ['id'],
-      nome: map['nome'],
+      nome: map['u_nome'],
       email: map['email'],
       senha: map['senha'],
     );

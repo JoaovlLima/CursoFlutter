@@ -15,7 +15,7 @@ class PaginaLogin extends StatefulWidget {
 class _PaginaLoginState extends State<PaginaLogin> {
   
 final _formKey = GlobalKey<FormState>();
-  TextEditingController _nomeController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   TextEditingController _senhaController = TextEditingController();
   bool _loading = false;
   
@@ -39,13 +39,13 @@ final _formKey = GlobalKey<FormState>();
               ),
               SizedBox(height: 20),
               TextFormField(
-                controller: _nomeController,
-                decoration: InputDecoration(labelText: 'Nome'),
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'E-mail'),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Por favor, insira seu nome';
-                  } else if (!isValidNome(value)) {
-                    return 'nome inválido';
+                    return 'Por favor, insira seu e-mail';
+                  } else if (!isValidEmail(value)) {
+                    return 'E-mail inválido';
                   }
                   return null;
                 },
@@ -92,7 +92,7 @@ final _formKey = GlobalKey<FormState>();
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      String nome = _nomeController.text;
+      String email = _emailController.text;
       String senha = _senhaController.text;
 
       setState(() {
@@ -101,17 +101,17 @@ final _formKey = GlobalKey<FormState>();
 
       BancoDadosCrud bancoDados = BancoDadosCrud();
       try {
-        Usuario? usuario = await bancoDados.getUsuario(nome, senha);
+        Usuario? usuario = await bancoDados.getUsuario(email, senha);
         if (usuario != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PaginaHome(nome:usuario.nome, email:usuario.email,),
+              builder: (context) => PaginaHome(email:usuario.email),
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('nome ou senha incorretos'),
+            content: Text('Email ou senha incorretos'),
           ));
         }
       } catch (e) {
@@ -127,9 +127,7 @@ final _formKey = GlobalKey<FormState>();
     }
   }
 
-  bool isValidNome(String nome) {
-    return RegExp(r'^[a-zA-ZÀ-ú-\s]+$').hasMatch(nome);
-  }               
-                    
-  
+  bool isValidEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
 }
