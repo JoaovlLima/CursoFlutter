@@ -72,6 +72,20 @@ Future<void> create(Usuario usuario) async {
     }
   }
   
-  
+  Future<bool> readByName(String nome) async {
+    try {
+      final Database db = await _getDatabase();
+      final List<Map<String, dynamic>> maps = await db.query(
+        Nome_Tabela,
+        where: 'nome = ?',
+        whereArgs: [nome],
+      ); // Consulta o banco de dados pelo nome
+
+      return maps.isNotEmpty; // Retorna verdadeiro se encontrar algum registro
+    } catch (ex) {
+      print(ex);
+      return false; // Retorna falso em caso de erro
+    }
+  }
 
 }
