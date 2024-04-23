@@ -7,6 +7,7 @@ Pagina Cadastro
         id_produto
         nome_produto
         descricao_produto
+        quantidade
         foto_produto
         preco_produto
         categoria_produto[] -> vetor
