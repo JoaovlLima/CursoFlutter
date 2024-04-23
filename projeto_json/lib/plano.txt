@@ -1,0 +1,15 @@
+Pagina inicial
+   cadastrar produtos(2 botoes)
+   Listar produtos
+
+Pagina Cadastro
+    formulario Cadastro
+        id_produto
+        nome_produto
+        descricao_produto
+        foto_produto
+        preco_produto
+        categoria_produto[] -> vetor
+    
+Pagina Listar
+    Clicar no produto => abrir info produto    
