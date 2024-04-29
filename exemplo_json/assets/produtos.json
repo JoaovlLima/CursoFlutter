@@ -1,0 +1,21 @@
+[
+    {
+        "nome":"Fonte 600w",
+        "preco": 500,
+        "categoria":"Perifericos",
+        "foto": "assets/img/img1.jpg"
+
+    },
+    {
+        "nome":"Mouse Mágico",
+        "preco": 700,
+        "categoria":"Acessórios",
+        "foto": "assets/img/img2.jpg"
+    },
+    {
+        "nome":"Casaco tux",
+        "preco": 800,
+        "categoria":"Vestuário",
+        "foto": "assets/img/img3.jpg"
+    }
+]
