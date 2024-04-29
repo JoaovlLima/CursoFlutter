@@ -1,3 +1,4 @@
+import 'package:exemplo_persistencia_json/View/PaginaInicial.dart';
 import 'package:flutter/material.dart';
 
 void main () {
