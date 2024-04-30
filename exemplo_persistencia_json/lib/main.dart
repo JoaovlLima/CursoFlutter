@@ -1,4 +1,7 @@
-import 'package:exemplo_persistencia_json/View/PaginaInicial.dart';
+
+import 'package:exemplo_persistencia_json/View/cadastrar_livros_view.dart';
+import 'package:exemplo_persistencia_json/View/home_screen_view.dart';
+import 'package:exemplo_persistencia_json/View/listar_livros_view.dart';
 import 'package:flutter/material.dart';
 
 void main () {
@@ -13,11 +16,20 @@ MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Persistencia Json",
-      theme: ThemeData(
-        primaryColor: Colors.black
-      ),
-      home: HomePage(),
-    );
+    title: 'livraria',
+    theme: ThemeData(
+      primarySwatch: Colors.red,
+    ),
+    home: const HomeScreen(),
+    debugShowCheckedModeBanner: false,
+    initialRoute: '/home',
+    routes: {
+      '/home': (context) => const HomeScreen(),
+      '/cadastro': (context) => const CadastrarLivrosScreen(),
+      '/listar':(context) => const ListarLivrosScreen()
+    },
+
+      
+  );
   }
-}
+  }
