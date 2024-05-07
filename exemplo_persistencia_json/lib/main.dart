@@ -25,7 +25,7 @@ MyApp extends StatelessWidget {
     initialRoute: '/home',
     routes: {
       '/home': (context) => const HomeScreen(),
-      '/cadastro': (context) => const CadastrarLivrosScreen(),
+      '/cadastro': (context) => LivroCadastroPage(),
       '/listar':(context) => const ListarLivrosScreen()
     },
 
