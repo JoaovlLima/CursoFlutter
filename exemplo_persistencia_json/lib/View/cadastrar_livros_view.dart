@@ -217,6 +217,7 @@ Future<void> _tirarFoto() async {
     capa: _imagemSelecionada!.path,
     );
     controller.addLivro(livro);
+    controller.salvarJson();
     _cleanControllers();
 
     //snackbar
