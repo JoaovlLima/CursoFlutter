@@ -1,0 +1,33 @@
+
+TAREFA:
+  APP para clima usando API
+
+    Model:
+      clima.dart: 
+        int id;
+        int humidade_ar;
+        String pais;
+        String nome;
+        String descricao;
+        double veloc_vento;
+        double temp;
+        double niv_uv;
+
+    Controll:
+      clima_control.dart:
+        
+
+    
+    View:
+      main.dart
+      home_fav_screen.dart
+      clima_screen.dart
+
+
+
+
+
+
+
+Pages
+  Model
