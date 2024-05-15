@@ -6,7 +6,7 @@ class Clima {
   String descricao;
   double velocVent;
   double temp;
- 
+  bool favorito;
 
   Clima({
     required this.id,
@@ -16,21 +16,21 @@ class Clima {
     required this.pais,
     required this.temp,
     required this.velocVent,
+    this.favorito = false, 
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'humidAr':humidAr,
+      'humidAr': humidAr,
       'nome': nome,
       'descricao': descricao,
       'pais': pais,
       'temp': temp,
-      'velocVent' : velocVent,
+      'velocVent': velocVent,
+      'favorito': favorito,
     };
   }
-
-  
 
   factory Clima.fromJson(Map<String, dynamic> json) => Clima(
         id: json["weather"][0]["id"],
@@ -40,5 +40,6 @@ class Clima {
         velocVent: json["wind"]["speed"],
         temp: json["main"]["temp_min"],
         humidAr: json["main"]["humidity"],
+        favorito: json['favorito'] ?? false, // Valor padrão se não existir no JSON
       );
 }
