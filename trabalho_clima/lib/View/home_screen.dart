@@ -60,6 +60,7 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
   }
 
   Future<void> _deleteCityData(String city) async {
+    
     cidadesArmazenadas.remove(city);
     cidadesFavoritas.remove(city);
     final prefs = await SharedPreferences.getInstance();
@@ -164,13 +165,16 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                      
                           IconButton(
                             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                            onPressed: () => _toggleFavorite(city),
+                            onPressed: () { _toggleFavorite(city);
+                            }
                           ),
                           IconButton(
                             icon: Icon(Icons.delete),
-                            onPressed: () => _deleteCityData(city),
+                            onPressed: () { _deleteCityData(city);
+                            }
                           ),
                         ],
                       ),
