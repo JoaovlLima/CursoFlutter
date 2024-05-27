@@ -1,93 +1,70 @@
-import 'package:path/path.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:sa3_correcao/Model/Usuario.dart';
-import 'package:sqflite/sqflite.dart';
 
 class BancoDadosCrud {
+  static const String apiUrl = 'http://10.109.207.237:3000/usuarios';
 
-  static const String Nome_db = 'usuarios.db';
-  static const String Nome_Tabela = 'usuarios';
-  static const String Scrip_Criacao_tabela = "CREATE TABLE IF NOT EXISTS usuarios(id SERIAL PRIMARY KEY," +
-  "nome TEXT, email TEXT UNIQUE, senha TEXT)";
-
-   Future<Database> _getDatabase() async {
-  return openDatabase(
-    join(await getDatabasesPath(), Nome_db),
-    onCreate: (db, version) {
-      return db.execute(Scrip_Criacao_tabela);
-    },
-    version: 1,
-  );
-
-}
-
-Future<void> create(Usuario usuario) async {
+  Future<void> create(Usuario usuario) async {
     try {
-      final Database db = await _getDatabase();
-      await db.insert(
-        
-          Nome_Tabela, usuario.toMap()); // Insere o contato no banco de dados
-    } catch (ex) {
-      print(ex);
-      return;
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(usuario.toMap()),
+      );
+
+      if (response.statusCode == 201) {
+        print('Usuário criado com sucesso: ${response.body}');
+      } else {
+        print('Erro ao criar usuário: ${response.statusCode}');
+        print('Resposta: ${response.body}');
+        throw Exception('Erro ao criar usuário: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro ao criar usuário: $e');
     }
   }
 
-  // Método para obter todos os contatos do banco de dados
+  Future<List<Usuario>> readAll() async {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonList = jsonDecode(response.body);
+        return jsonList.map((json) => Usuario.fromMap(json)).toList();
+      } else {
+        throw Exception('Erro ao buscar usuários: ${response.body}');
+      }
+    } catch (e) {
+      print('Erro ao ler os usuários: $e');
+      return [];
+    }
+  }
+
   Future<Usuario?> getUsuario(String nome, String senha) async {
     try {
-      final Database db = await _getDatabase();
-      final List<Map<String, dynamic>> maps =
-          await db.query(Nome_Tabela,
-          where: 'nome = ? AND senha = ?',
-          whereArgs: [nome,senha]
-          ); // Consulta todos os contatos na tabela
-
-      if (maps.isNotEmpty){
-        return Usuario.fromMap(maps[0]);
-      }else{
-        return null;
+      List<Usuario> usuarios = await readAll();
+      for (var usuario in usuarios) {
+        if (usuario.nome == nome && usuario.senha == senha) {
+          return usuario;
+        }
       }
-    } catch (ex) {
-      print(ex);
+      return null;
+    } catch (e) {
+      print('Erro ao buscar usuário: $e');
       return null;
     }
   }
 
-  // Método para obter todos os contatos do banco de dados
-  Future<bool> existsUsuario(String nome, String senha) async {
+  Future<bool> readByName(String nome) async {
     try {
-      final Database db = await _getDatabase();
-      final List<Map<String, dynamic>> maps =
-          await db.query(Nome_Tabela,
-          where: 'nome = ? AND senha = ?',
-          whereArgs: [nome,senha]
-          ); // Consulta todos os contatos na tabela
-
-      if (maps.isNotEmpty){
-        return true;
-      }else{
-        return false;
-      }
-    } catch (ex) {
-      print(ex);
+      List<Usuario> usuarios = await readAll();
+      return usuarios.any((u) => u.nome == nome);
+    } catch (e) {
+      print('Erro ao buscar usuário por nome: $e');
       return false;
     }
   }
-  
-  Future<bool> readByName(String nome) async {
-    try {
-      final Database db = await _getDatabase();
-      final List<Map<String, dynamic>> maps = await db.query(
-        Nome_Tabela,
-        where: 'nome = ?',
-        whereArgs: [nome],
-      ); // Consulta o banco de dados pelo nome
-
-      return maps.isNotEmpty; // Retorna verdadeiro se encontrar algum registro
-    } catch (ex) {
-      print(ex);
-      return false; // Retorna falso em caso de erro
-    }
-  }
-  
 }
