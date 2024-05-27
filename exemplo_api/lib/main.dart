@@ -1,4 +1,6 @@
-import 'package:exemplo_api/screen.dart';
+import 'package:exemplo_api/View/favorite_screen.dart';
+import 'package:exemplo_api/View/screen.dart';
+import 'package:exemplo_api/View/search_screen.dart';
 import 'package:flutter/material.dart';
 
 void main(){
@@ -16,7 +18,14 @@ class Myapp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity, 
       ),
-      home: WeatherScreen(),
+      home: HomeScreen(),
+      routes: 
+      {
+        '/': (context) => HomeScreen(),
+        '/favorite': (context) => FavoriteScreen(),
+        '/search': (context) => SearchScreen(),
+        
+      },
     );
   }
 }
