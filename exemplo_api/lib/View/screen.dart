@@ -17,9 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    _getWeather();
     super.initState();
     // geolocator
-    _getWeather();
+
   }
 
   Future<void> _getWeather() async{
@@ -64,42 +65,44 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 20),
 
-            _controller.weatherList.isEmpty ?
-            Column(
-                children: [
-                  const Text("Localização Não Encontrada"),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      _getWeather();
-                     },
-                  )
-                ]
-              )
-              :
-              Column(
-                children: [
-                  Text(_controller.weatherList.last.name),
-                  Text(_controller.weatherList.last.main),
-                  Text(_controller.weatherList.last.description),
-                  Text((_controller.weatherList.last.temp-273).toString()),
-                  Text((_controller.weatherList.last.temp_max-273).toString()),
-                  Text((_controller.weatherList.last.temp_min-273).toString()),
-                   IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      _getWeather();
-                     },
-                  )
-
-                  
-                  
-              ],)
-
-
-            ],
-          )
-        ),) ,
+           Builder(
+               
+                builder: (context) {
+                  if (_controller.weatherList.isEmpty) {
+                    return Column(children: [
+                      const Text("Localização Não Encontrada"),
+                      IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          _getWeather();
+                        },
+                      )
+                    ]);
+                  } else {
+                    return Column(
+                      children: [
+                        Text(_controller.weatherList.last.name),
+                        Text(_controller.weatherList.last.main),
+                        Text(_controller.weatherList.last.description),
+                        Text((_controller.weatherList.last.temp - 273)
+                            .toString()),
+                        Text((_controller.weatherList.last.temp_max - 273)
+                            .toString()),
+                        Text((_controller.weatherList.last.temp_min - 273)
+                            .toString()),
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () {
+                            _getWeather();
+                          },
+                        )
+                      ],
+                    );
+                  }
+                })
+          ],
+        )),
+      ),
     );
   }
 }

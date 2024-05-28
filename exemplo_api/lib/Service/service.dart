@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WeatherService {
-  final String apiKey ='681126f28e7d6fa3a7cfe0da0671e599';
+  final String apiKey ='e83b3c4c08285bf87b99f9bbc0abe3f0';
   final String baseUrl ='https://api.openweathermap.org/data/2.5/weather';
 
 
@@ -32,6 +32,15 @@ class WeatherService {
     } else {
       // Se a resposta não foi bem-sucedida, lança uma exceção indicando o erro.
       throw Exception('Failed to load weather data');
+    }
+}
+Future<bool> findCidade(String city) async {
+   final url = Uri.parse('$baseUrl?q=$city&appid=$apiKey');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
 }
 }
