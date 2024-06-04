@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sa3_correcao/Model/Usuario.dart';
 import 'package:sa3_correcao/Controller/BancoDados.dart';
 
-
 class CadastroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -39,16 +38,14 @@ class _PaginaCadastroState extends State<PaginaCadastro> {
     try {
       var verifUsuario = await bancoDados.readByName(name);
 
-       if (verifUsuario != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Já existe um usuário com esse nome!')),
-      );
-      return;
-    }
+      if (verifUsuario) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Já existe um usuário com esse nome!')),
+        );
+        return;
+      }
 
-
-
-      bancoDados.create(usuario);
+      await bancoDados.create(usuario);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Usuário cadastrado com sucesso!')),
       );
@@ -124,7 +121,6 @@ class _PaginaCadastroState extends State<PaginaCadastro> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                     
                       cadastrarUsuario(context);
                     }
                   },

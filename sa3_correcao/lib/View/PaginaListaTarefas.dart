@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sa3_correcao/Controller/BancoDados.dart';
+import 'package:sa3_correcao/Model/Usuario.dart';
 
 class PaginaHome extends StatefulWidget {
   String email;
@@ -11,121 +12,145 @@ class PaginaHome extends StatefulWidget {
 }
 
 class _PaginaHomeState extends State<PaginaHome> {
-  late SharedPreferences
-      _prefs; // Preferências compartilhadas para armazenar o estado do tema escuro
-  bool _concluido = false; // Estado atual do tema escuro
+  late SharedPreferences _prefs;
+  bool _concluido = false;
   String email;
   String _descricao = '';
 
   _PaginaHomeState({required this.email});
 
-  List<String> tarefas = []; // Lista de tarefas
-  final TextEditingController _controller =
-      TextEditingController(); // Controlador de texto para o campo de entrada de nova tarefa
+  List<String> tarefas = [];
+  final TextEditingController _controller = TextEditingController();
+
+  List<Usuario> usuarios = [];
+  BancoDadosCrud bancoDados = BancoDadosCrud();
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences(); // Carrega as preferências compartilhadas ao iniciar a tela
+    _loadPreferences();
+    _fetchUsers();
   }
 
   Future<void> _loadPreferences() async {
-    _prefs = await SharedPreferences
-        .getInstance(); // Obtém as preferências compartilhadas
+    _prefs = await SharedPreferences.getInstance();
     setState(() {
-      tarefas = _prefs.getStringList('${email}tarefas') ??
-          []; // Carrega as tarefas armazenadas ou uma lista vazia se não houver tarefas
+      tarefas = _prefs.getStringList('${email}tarefas') ?? [];
     });
   }
 
+    Future<void> _fetchUsers() async {
+      try {
+        List<Usuario> fetchedUsers = await bancoDados.readAll();
+        setState(() {
+          usuarios = fetchedUsers;
+        });
+      } catch (e) {
+        print('Erro ao buscar usuários: $e');
+      }
+    }
+
   Future<void> saveTarefas() async {
-    _prefs = await SharedPreferences
-        .getInstance(); // Obtém as preferências compartilhadas
-    await _prefs.setStringList('${email}tarefas',
-        tarefas); // Salva a lista de tarefas nas preferências compartilhadas
+    _prefs = await SharedPreferences.getInstance();
+    await _prefs.setStringList('${email}tarefas', tarefas);
   }
+
   Future<void> editTarefas(int index) async {
     _prefs = await SharedPreferences.getInstance();
 
     showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text('Editar Tarefas'), // Título do diálogo de nova tarefa
-                content: TextField(
-                  controller:
-                      _controller, // Controlador de texto para o campo de entrada
-                  decoration: InputDecoration(
-                      hintText: 'Digite a tarefa'), // Dica no campo de entrada
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                       tarefas[index] = _controller.text;
-                        saveTarefas(); // Salva as tarefas atualizadas
-                        _controller.clear(); // Limpa o campo de entrada
-                        Navigator.of(context).pop(); // Fecha o diálogo
-                      });
-                    },
-                    child: Text('Adicionar'), // Botão para adicionar a tarefa
-                  ),
-                ],
-              );
-            },
-          );
-
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Editar Tarefas'),
+          content: TextField(
+            controller: _controller,
+            decoration: InputDecoration(hintText: 'Digite a tarefa'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  tarefas[index] = _controller.text;
+                  saveTarefas();
+                  _controller.clear();
+                  Navigator.of(context).pop();
+                });
+              },
+              child: Text('Adicionar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Tarefas'), // Título da barra de aplicativos
+        title: Text('Lista de Tarefas'),
       ),
-      body: ListView.builder(
-        itemCount: tarefas.length, // Número de itens na lista de tarefas
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(tarefas[index]),
-            trailing: IconButton(
-              icon: Icon(Icons.edit), // Ícone de edição
-              onPressed: () {
-              editTarefas(index);
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: tarefas.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(tarefas[index]),
+                  trailing: IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      editTarefas(index);
+                    },
+                  ),
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Tem certeza que deseja excluir?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Não'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  tarefas.removeAt(index);
+                                  saveTarefas();
+                                });
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('Sim'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
               },
-            ), // Título do item da lista
-            onLongPress: () {
-              /////////////
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Tem certeza que deseja excluir?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Fecha o diálogo
-                        },
-                        child: Text('Não'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            tarefas.removeAt(index); // Remove a tarefa da lista
-                            saveTarefas(); // Salva as tarefas atualizadas
-                          });
-                          Navigator.of(context).pop(); // Fecha o diálogo
-                        },
-                        child: Text('Sim'),
-                      ),
-                    ],
-                  );
-                },
-              );
-              //////////////
-            },
-          );
-        },
+            ),
+          ),
+          Divider(),
+          Text('Lista de Usuários'),
+          Expanded(
+            child: ListView.builder(
+              itemCount: usuarios.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(usuarios[index].nome),
+                  subtitle: Text(usuarios[index].email),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -133,43 +158,40 @@ class _PaginaHomeState extends State<PaginaHome> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('Nova Tarefa'), // Título do diálogo de nova tarefa
+                title: Text('Nova Tarefa'),
                 content: TextField(
-                  controller:
-                      _controller, // Controlador de texto para o campo de entrada
-                  decoration: InputDecoration(
-                      hintText: 'Digite a tarefa'), // Dica no campo de entrada
+                  controller: _controller,
+                  decoration: InputDecoration(hintText: 'Digite a tarefa'),
                 ),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        if(_controller.text.isEmpty){
+                        if (_controller.text.isEmpty) {
                           showDialog(
-                        context: context,
-                        builder: (context){
-                         return AlertDialog(actions: [Text('Insira uma tarefa')],);
-                        }
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                actions: [Text('Insira uma tarefa')],
+                              );
+                            },
                           );
-                        }else{
-                        tarefas.add(
-                            _controller.text); // Adiciona a nova tarefa à lista
-                        saveTarefas(); // Salva as tarefas atualizadas
-                        _controller.clear(); // Limpa o campo de entrada
-                        Navigator.of(context).pop(); // Fecha o diálogo
+                        } else {
+                          tarefas.add(_controller.text);
+                          saveTarefas();
+                          _controller.clear();
+                          Navigator.of(context).pop();
                         }
                       });
-                      
                     },
-                    
-                    child: Text('Adicionar'), // Botão para adicionar a tarefa
+                    child: Text('Adicionar'),
                   ),
                 ],
               );
             },
           );
         },
-        child: Icon(Icons.add), // Ícone do botão de adicionar
+        child: Icon(Icons.add),
       ),
     );
   }

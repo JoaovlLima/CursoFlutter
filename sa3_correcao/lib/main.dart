@@ -1,14 +1,14 @@
-
 import 'package:flutter/material.dart';
+import 'package:sa3_correcao/View/PaginaListaTarefas.dart';
 import 'package:sa3_correcao/View/PaginaLogin.dart';
 
-void main () {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Garante a inicialização dos plugins
   runApp(MyApp());
 }
-class 
-MyApp extends StatelessWidget {
-  const 
-  MyApp({super.key});
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

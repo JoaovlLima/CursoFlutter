@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868728264321",
+    "project_id": "teste-firebase-tarde-joao",
+    "storage_bucket": "teste-firebase-tarde-joao.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868728264321:android:60b6bee163fb74ece59f80",
+        "android_client_info": {
+          "package_name": "br.com.joaodb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD47NE3LRbcT14rBsUnj_sbDdRKNCjuQOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
