@@ -51,12 +51,44 @@ class _RegistroScreenState extends State<RegistroScreen> {
               decoration: InputDecoration(
                 labelText: 'Confirmar Senha',
               ),
-              validator: (value) {},
-              
-            )
-            ])),
-        ),),
+              validator: (value) {}),
 
+              const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        _registrar();
+                      },
+                      child: Text('Registrar'),
+                    ),
+                  ])),
+        ),
+      ),
     );
   }
+
+  Future<void> _registrar() async {
+    if (_confirmPasswordController.text == _passwordController.text) {
+      if (_formKey.currentState!.validate()) {
+        _authService.registerWithEmail(
+            _emailController.text, _confirmPasswordController.text);
+            Navigator.pushNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Preencha todos os campos'),
+          ),
+        );
+        return null;
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Senhas não conferem'),
+        ),
+      );
+      return null;
+    }
+  }
 }
+
+            

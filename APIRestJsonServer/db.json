@@ -1,7 +1,7 @@
 {
     "produto": [
         {
-            "id": 1,
+            "title": 1,
             "nome": "Produto 1",
             "preco": 10.00
         },
@@ -14,6 +14,24 @@
             "id": 3,
             "nome": "Produto 3",
             "preco": 10.00
+        }
+    ],
+    
+    "Musicas": [
+        {
+            "title": "Musical",
+            "artist": "artista 1",
+            "url": "http//"
+        },
+        {
+            "title": "Musical",
+            "artist": "artista 2",
+            "url": "http//"
+        },
+        {
+            "title": "Musical",
+            "artist": "artista 3",
+            "url": "http//"
         }
     ]
 }

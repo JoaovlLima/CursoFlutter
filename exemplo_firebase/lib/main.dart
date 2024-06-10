@@ -1,5 +1,7 @@
 import 'package:exemplo_firebase/firebase_options.dart';
 import 'package:exemplo_firebase/screens/home-sreen.dart';
+import 'package:exemplo_firebase/screens/list_screen.dart';
+import 'package:exemplo_firebase/screens/login-sreen.dart';
 import 'package:exemplo_firebase/screens/registro-sreen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -21,8 +23,12 @@ class MainApp extends StatelessWidget {
     return  MaterialApp(
       title: "Exemplo FireBase",
       home: const HomeScreen(),
-      routes: {     
-         '/registro': (context) => const RegistroScreen()},
+      routes: {
+        '/home':(context) => const HomeScreen(),
+        '/login':(context) => const LoginPage(),
+        '/registro':(context) => const RegistroScreen(),
+        '/list':(context) => const TodolistView()
+      },
     );
   }
 }
