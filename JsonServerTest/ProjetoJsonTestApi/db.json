@@ -10,5 +10,12 @@
             "nome": "Levi",
             "email": "levi@gmail.com"
         }
+    ],
+    "musicas": [
+        {
+            "title": "Cracolândia",
+            "artist": "Mc Hariel",
+            "url": "https://audio.jukehost.co.uk/Fy6Mr5XpNDVAoovq9KVlWFM5RaiFkl8T"
+          }
     ]
 }

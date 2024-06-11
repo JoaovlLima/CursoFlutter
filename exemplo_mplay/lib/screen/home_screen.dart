@@ -1,6 +1,6 @@
 import 'package:exemplo_mplay/service/music_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'music_player_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,11 +10,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final MusicService _musicService = MusicService();
+  final MusicService _service = MusicService();
+  late Future<void> _futureList;
 
-  Future<void> _musicList() async{
+  @override
+  void initState() {
+    super.initState();
+    _futureList = _getList();
+  }
+
+  Future<void> _getList() async {
     try {
-      await _musicService.fetchListMusic();
+      await _service.fetchList();
     } catch (e) {
       print(e.toString());
     }
@@ -24,27 +31,47 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title:  const Text('Music Player'),
+        title: Text('Home'),
       ),
-      body: 
-      Padding(padding: EdgeInsets.all(8),
-      child: Center(
-        child:FutureBuilder(
-          future: _musicList(),
-         builder: (context,snapshot){
-          if(_musicService.listMusic.isNotEmpty){
-            return ListView.builder(
-              itemCount: _musicService.listMusic.length,
-               itemBuilder: (context,index) {
-                  return ListTile(
-                    title: Text(_musicService.listMusic[index].title),
-                    subtitle: Text(_musicService.listMusic[index].artist),
-                  );
-                });
-            }else{
-               return CircularProgressIndicator();
-            }
-          })))
+      body: Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(
+          child: Column(
+            children: [
+              Expanded(
+                child: FutureBuilder(
+                  future: _futureList,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (_service.list.isEmpty) {
+                      return Center(child: Text('Não há músicas cadastradas'));
+                    } else {
+                      return ListView.builder(
+                        itemCount: _service.list.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(_service.list[index].title),
+                            subtitle: Text(_service.list[index].url),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MusicPlayerScreen(music: _service.list[index]),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
