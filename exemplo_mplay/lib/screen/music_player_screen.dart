@@ -1,17 +1,21 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:exemplo_mplay/models/music_model.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 
 class MusicPlayerScreen extends StatefulWidget {
   final MusicModel music;
-  const MusicPlayerScreen({super.key, required this.music});
+
+  const MusicPlayerScreen({Key? key, required this.music}) : super(key: key);
 
   @override
-  State<MusicPlayerScreen> createState() => _MusicPlayerScreenState();
+  _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
 }
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   late AudioPlayer _audioPlayer;
+  var cont = 0;
+  var icons = Icons.play_arrow;
 
   @override
   void initState() {
@@ -51,14 +55,27 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: _playMusic,
-              child: Text('Tocar'),
+           IconButton(
+              onPressed: () {
+                cont++;
+                if(cont == 1){
+                  _playMusic();
+                  print(cont);
+                  icons = Icons.pause;
+                  Icon(icons);
+                }
+                else{
+                  _pauseMusic();
+                   print(cont);
+                  icons = Icons.play_arrow;
+                  cont = 0;
+                  Icon(icons);
+                  
+                }
+              },
+              icon: Icon(icons),
             ),
-            ElevatedButton(
-              onPressed: _pauseMusic,
-              child: Text('Pausar'),
-            ),
+            
           ],
         ),
       ),

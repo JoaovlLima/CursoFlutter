@@ -11,7 +11,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
      return  MaterialApp(
-      title: "Exemplo FireBase",
+      title: "Exemplo Mplayer",
       home : const HomeScreen(),
       routes: {
         '/home':(context) => const HomeScreen(),

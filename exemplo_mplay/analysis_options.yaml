@@ -1,1 +1,7 @@
+analyzer:
+  errors:
+    prefer_const_constructors: ignore ignore ignore
+    prefer_const_literals_to_create_immutables: ignore
+  error ignores:
+    prefer_const_constructors: ignore
 include: package:flutter_lints/flutter.yaml

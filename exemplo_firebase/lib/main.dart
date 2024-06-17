@@ -27,7 +27,7 @@ class MainApp extends StatelessWidget {
         '/home':(context) => const HomeScreen(),
         '/login':(context) => const LoginPage(),
         '/registro':(context) => const RegistroScreen(),
-        '/list':(context) => const TodolistView()
+        
       },
     );
   }
