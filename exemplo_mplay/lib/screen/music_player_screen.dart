@@ -2,7 +2,6 @@ import 'package:exemplo_mplay/models/music_model.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-
 class MusicPlayerScreen extends StatefulWidget {
   final MusicModel music;
 
@@ -14,8 +13,8 @@ class MusicPlayerScreen extends StatefulWidget {
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
   late AudioPlayer _audioPlayer;
-  var cont = 0;
-  var icons = Icons.play_arrow;
+  bool isPlaying = false;
+  IconData playPauseIcon = Icons.play_arrow;
 
   @override
   void initState() {
@@ -29,7 +28,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     super.dispose();
   }
 
-  void _playMusic() async {
+  void _togglePlayPause() async {
+    if (isPlaying) {
+      await _pauseMusic();
+    } else {
+      await _playMusic();
+    }
+    setState(() {
+      isPlaying = !isPlaying;
+      playPauseIcon = isPlaying ? Icons.pause : Icons.play_arrow;
+    });
+  }
+
+  Future<void> _playMusic() async {
     try {
       await _audioPlayer.play(UrlSource(widget.music.url));
     } catch (e) {
@@ -37,7 +48,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     }
   }
 
-  void _pauseMusic() async {
+  Future<void> _pauseMusic() async {
     try {
       await _audioPlayer.pause();
     } catch (e) {
@@ -50,32 +61,63 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.music.title),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           IconButton(
-              onPressed: () {
-                cont++;
-                if(cont == 1){
-                  _playMusic();
-                  print(cont);
-                  icons = Icons.pause;
-                  Icon(icons);
-                }
-                else{
-                  _pauseMusic();
-                   print(cont);
-                  icons = Icons.play_arrow;
-                  cont = 0;
-                  Icon(icons);
-                  
-                }
-              },
-              icon: Icon(icons),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 16),
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(
+                      Icons.music_note,
+                      size: 80,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    widget.music.title,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    widget.music.artist,
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16),
+                  IconButton(
+                    icon: Icon(
+                      playPauseIcon,
+                      size: 64,
+                      color: Colors.deepPurple,
+                    ),
+                    onPressed: _togglePlayPause,
+                  ),
+                  SizedBox(height: 16),
+                ],
+              ),
             ),
-            
           ],
         ),
       ),
