@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ClimaService {
-  final String apiKey; // Sua chave de API para o serviço de clima
+  final String apiKey;
 
   ClimaService(this.apiKey);
 

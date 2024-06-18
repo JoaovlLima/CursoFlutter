@@ -17,6 +17,7 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
   String _humidAr = '';
   String _velocVent = '';
   bool _showStoredCities = true;
+  double? _currentTemp;
 
   Map<String, dynamic> cidadesArmazenadas = {};
   List<String> cidadesFavoritas = [];
@@ -35,10 +36,16 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
   }
 
   void _onFocusChange() {
-    print('Focus changed: ${_focusNode.hasFocus}');
-    setState(() {
-      _showStoredCities = _focusNode.hasFocus;
-    });
+    if (!_focusNode.hasFocus) {
+      // Mantenha a lista de cidades visível mesmo quando o foco é perdido
+      Future.delayed(Duration(milliseconds: 1), () {
+        if (!_focusNode.hasFocus) {
+          setState(() {
+            _showStoredCities = true;
+          });
+        }
+      });
+    }
   }
 
   Future<void> _loadStoredCities() async {
@@ -48,13 +55,11 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
     if (storedCities != null) {
       setState(() {
         cidadesArmazenadas = json.decode(storedCities);
-        print('Cidades armazenadas carregadas: $cidadesArmazenadas');
       });
     }
     if (favoriteCities != null) {
       setState(() {
         cidadesFavoritas = favoriteCities;
-        print('Cidades favoritas carregadas: $cidadesFavoritas');
       });
     }
   }
@@ -63,14 +68,12 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
     cidadesArmazenadas[city] = data;
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('cidadesArmazenadas', json.encode(cidadesArmazenadas));
-    print('Cidade salva: $city');
   }
 
   Future<void> _deleteCityData(String city) async {
     setState(() {
       cidadesArmazenadas.remove(city);
       cidadesFavoritas.remove(city);
-      print('Cidade deletada: $city');
     });
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('cidadesArmazenadas', json.encode(cidadesArmazenadas));
@@ -81,10 +84,8 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
     setState(() {
       if (cidadesFavoritas.contains(city)) {
         cidadesFavoritas.remove(city);
-        print('Cidade removida dos favoritos: $city');
       } else {
         cidadesFavoritas.add(city);
-        print('Cidade adicionada aos favoritos: $city');
       }
     });
     final prefs = await SharedPreferences.getInstance();
@@ -93,23 +94,20 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
 
   Future<void> _getTemperature() async {
     final response = await http.get(Uri.parse(
-        'https://api.openweathermap.org/data/2.5/weather?q=${_controller.text}&appid=b9ebe666087f299f5e2aad3a03d093b6&units=metric'));
+        'https://api.openweathermap.org/data/2.5/weather?q=${_controller.text}&appid=e83b3c4c08285bf87b99f9bbc0abe3f0&units=metric'));
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       final clima = Clima.fromJson(data);
 
-      // Atualize o estado com os novos dados
       setState(() {
         _temperature = '${clima.temp} °C';
         _velocVent = '${clima.velocVent} m/s';
         _humidAr = '${clima.humidAr}%';
-        print('Dados do clima atualizados: $_temperature, $_velocVent, $_humidAr');
+        _currentTemp = clima.temp;
+        _showStoredCities = false; // Esconder a lista de cidades armazenadas após a busca
       });
 
-      // Agora você pode usar o método toMap para obter um Map dos dados
       final Map<String, dynamic> climaMap = clima.toMap();
-
-      // Adicione a cidade ao Map e armazene no banco de dados JSON
       climaMap['cidade'] = _controller.text;
       await _saveCityData(_controller.text, climaMap);
     } else {
@@ -117,29 +115,25 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
         _temperature = 'Falha ao carregar dados do clima';
         _velocVent = '';
         _humidAr = '';
-        print('Falha ao carregar dados do clima');
+        _currentTemp = null;
       });
     }
   }
 
   void _onCityTapped(String city) {
     _controller.text = city;
-    print('Cidade selecionada: $city');
     _getTemperature();
     _focusNode.unfocus(); // Para fechar o teclado
-    setState(() {
-      _showStoredCities = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Weather App'),
+        title: const Text('Weather App'),
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite),
+            icon: const Icon(Icons.favorite),
             onPressed: () {
               Navigator.push(
                 context,
@@ -150,7 +144,7 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             TextField(
@@ -159,16 +153,22 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
               decoration: InputDecoration(
                 labelText: 'Digite o nome da cidade',
                 hintText: 'São Paulo',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: _getTemperature,
+                ),
               ),
               onSubmitted: (value) => _getTemperature(),
             ),
+            const SizedBox(height: 20),
             if (_showStoredCities)
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.grey),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 5.0,
@@ -196,7 +196,7 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () {
                                 _deleteCityData(city);
                               },
@@ -208,30 +208,39 @@ class _WeatherSearchPageState extends State<WeatherSearchPage> {
                   ),
                 ),
               ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _getTemperature,
-              child: Text('Buscar Temperatura'),
+              child: const Text('Buscar Temperatura'),
             ),
-            SizedBox(height: 20),
-            Text(
-              _temperature.isNotEmpty
-                  ? 'Temperatura: $_temperature'
-                  : 'Insira uma cidade para buscar a temperatura',
-              style: TextStyle(fontSize: 24),
-            ),
-            Text(
-              _velocVent.isNotEmpty ? 'Velocidade do Vento: $_velocVent' : '',
-              style: TextStyle(fontSize: 24),
-            ),
-            Text(
-              _humidAr.isNotEmpty ? 'Umidade do Ar: $_humidAr' : '',
-              style: TextStyle(fontSize: 24),
-            ),
+            const SizedBox(height: 20),
+            if (_temperature.isNotEmpty)
+              Column(
+                children: [
+                  Text(
+                    'Temperatura: $_temperature',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    _velocVent.isNotEmpty ? 'Velocidade do Vento: $_velocVent' : '',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    _humidAr.isNotEmpty ? 'Umidade do Ar: $_humidAr' : '',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 20),
+                  if (_currentTemp != null)
+                    Image.asset(
+                      _currentTemp! >= 25 ? 'imagens/img_hot.png' : 'imagens/img_cold.png',
+                      height: 200,
+                      width: 200,
+                    ),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 }
-

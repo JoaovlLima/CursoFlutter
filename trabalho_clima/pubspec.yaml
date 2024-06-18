@@ -61,6 +61,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  
+
+  assets:
+    - imagens/img_cold.png
+    - imagens/img_hot.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -81,7 +86,10 @@ flutter:
   # fonts:
   #   - family: Schyler
   #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+           
+            
+         
+
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
